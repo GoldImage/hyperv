@@ -1,0 +1,44 @@
+{
+  "builders": [
+    {
+      "type": "hyperv-iso",
+      "iso_url": "..//Images//Windows10New.iso",
+      "iso_checksum": "2C38AF8B06F70DFF653D23706D7C7DF47DEDD814CFAB9933B19CFB077F37E057",
+      "communicator": "winrm",
+      "winrm_use_ssl": true,
+      "winrm_insecure": true,
+      "winrm_username": "hypervadmin", 
+      "winrm_password": "India@123",
+      "floppy_files": [
+        "autounattend.xml",
+        "disable-winrm.ps1",
+        "enable-winrm.ps1"
+      ],
+      "vm_name": "temp-vm",
+      "disk_size": 61440,
+      "cpus": 2,
+      "output_directory": "output",
+      "shutdown_command": "shutdown /s /t 10",
+      "headless": true,
+      "winrm_timeout": "4h",
+      "enable_secure_boot": true
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "powershell",
+      "elevated_user": "hypervadmin",
+      "elevated_password": "India@123",
+      "inline": [
+        "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine",
+        "Install-WindowsFeature -Name Web-Server",
+        "winrm quickconfig -force",
+        "Set-Item WSMan:\\localhost\\Service\\AllowUnencrypted -Value $true",
+        "Set-Item WSMan:\\localhost\\Service\\Auth\\Basic -Value $true",
+        "Set-Item WSMan:\\localhost\\Client\\TrustedHosts -Value '*' -Force",
+        "New-NetIPAddress -InterfaceAlias 'Ethernet' -IPAddress '192.168.1.100' -PrefixLength 24 -DefaultGateway '192.168.1.1'",
+        "Set-DnsClientServerAddress -InterfaceAlias 'Ethernet' -ServerAddresses '8.8.8.8', '8.8.4.4'"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+packer init windows.json.pkr.hcl
+packer validate .
+packer build  -force -var-file="windows.auto.pkrvars.hcl" "windows.json.pkr.hcl"
+packer build hyperv.json
